@@ -3,8 +3,9 @@ import { Button } from "../../ui/button";
 import { Checkbox } from "../../ui/checkbox";
 import type { ITask } from "@/types";
 import { cn } from "@/lib/utils";
-import { useAppDispatch } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { deleteTask, toggleCompleateState } from "@/redux/features/tasks/taskSlice";
+import { selectUsers } from "@/redux/features/users/userSlice";
 
 interface IProps {
   task: ITask;
@@ -12,6 +13,10 @@ interface IProps {
 
 const TaskCard = ({ task }: IProps) => {
   const dispatch = useAppDispatch()
+  const users = useAppSelector(selectUsers)
+
+  const assignedUser = users.find(user => user.id === task.assignedTo);
+
   return (
     <div className="border px-5 py-3 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
       <div className="flex items-center justify-between">
@@ -41,6 +46,7 @@ const TaskCard = ({ task }: IProps) => {
           <Checkbox checked={task.isCompleated} onClick={() => dispatch(toggleCompleateState(task.id))} />
         </div>
       </div>
+      <p><b>Assign To: </b>{assignedUser ? assignedUser.name : "No Assigned"}</p>
       <p className="text-gray-600 mt-2">{task.description} </p>
     </div>
   );

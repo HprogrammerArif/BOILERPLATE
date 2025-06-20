@@ -1,6 +1,7 @@
 import type { RootState } from "@/redux/store";
 import type { ITask } from "@/types";
 import { createSlice, nanoid, type PayloadAction } from "@reduxjs/toolkit";
+import { removeUser } from "../users/userSlice";
 
 interface IInitialState {
   tasks: ITask[];
@@ -16,6 +17,7 @@ const initialState: IInitialState = {
       dueDate: "",
       priority: "high",
       isCompleated: false,
+      assignedTo: null,
     },
     {
       id: "2",
@@ -25,18 +27,23 @@ const initialState: IInitialState = {
       dueDate: "",
       priority: "medium",
       isCompleated: false,
+      assignedTo: null,
     },
   ],
   filter: "all",
 };
 
-type draftTask = Pick<ITask, "title" | "description" | "priority" | "dueDate">;
+type draftTask = Pick<
+  ITask,
+  "title" | "description" | "priority" | "dueDate" | "assignedTo"
+>;
 
 const createTask = (taskData: draftTask): ITask => {
   return {
+    ...taskData,
     id: nanoid(),
     isCompleated: false,
-    ...taskData,
+    assignedTo: taskData.assignedTo || null, // Ensure assignedTo is set to null if not provided
   };
 };
 
@@ -58,27 +65,38 @@ const taskSlice = createSlice({
     deleteTask: (state, action: PayloadAction<string>) => {
       state.tasks = state.tasks.filter((task) => task.id !== action.payload);
     },
-    updateFilter: (state, action: PayloadAction<"high" | "medium" | "low" | "all">) => {
+    updateFilter: (
+      state,
+      action: PayloadAction<"high" | "medium" | "low" | "all">
+    ) => {
       state.filter = action.payload;
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(removeUser, (state, action) => {
+      state.tasks.forEach((task) =>
+        task.assignedTo === action.payload ? (task.assignedTo = null) : task
+      );
+    });
   },
 });
 
 export const selectTasks = (state: RootState) => {
-  const filter =  state.todo.filter;
+  const filter = state.todo.filter;
 
-  if(filter === 'low') {
-    return state.todo.tasks.filter((task) => task.priority === 'low')
-  } else if(filter === 'medium') {
-    return state.todo.tasks.filter((task) => task.priority === 'medium')
-  } else if(filter === 'high') {
-    return state.todo.tasks.filter((task) => task.priority === 'high')
+  if (filter === "low") {
+    return state.todo.tasks.filter((task) => task.priority === "low");
+  } else if (filter === "medium") {
+    return state.todo.tasks.filter((task) => task.priority === "medium");
+  } else if (filter === "high") {
+    return state.todo.tasks.filter((task) => task.priority === "high");
   } else {
-    return state.todo.tasks
+    return state.todo.tasks;
   }
 };
 
-export const { addTask, toggleCompleateState, deleteTask, updateFilter } = taskSlice.actions;
+export const { addTask, toggleCompleateState, deleteTask, updateFilter } =
+  taskSlice.actions;
 
 export default taskSlice.reducer;
 
