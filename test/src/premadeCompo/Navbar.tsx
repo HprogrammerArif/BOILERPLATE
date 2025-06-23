@@ -1,20 +1,23 @@
-import { useContext } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { AuthContext } from "../../../providers/AuthProvide";
+// import { AuthContext } from "../../../providers/AuthProvide";
 // import { BsCartCheckFill } from "react-icons/bs";
 import { FaHome, FaShoppingCart } from "react-icons/fa";
-import useCart from "../../../hooks/useCart";
-import useAdmin from "../../../hooks/useAdmin";
+// import useCart from "../../../hooks/useCart";
+// import useAdmin from "../../../hooks/useAdmin";
 
 const Navbar = () => {
-  const { user, logOut } = useContext(AuthContext);
-  const [cart] = useCart();
-  const [isAdmin] = useAdmin();
+  // const { user, logOut } = useContext(AuthContext);
+  // const [cart] = useCart();
+  // const [isAdmin] = useAdmin();
+
+  const user = null; // Replace with actual user context
+  const isAdmin = false; // Replace with actual admin check
+  const cart = []; // Replace with actual cart context or state
 
   const handleLogOut = () => {
-    logOut()
-      .then(() => {})
-      .catch((err) => console.log(err));
+    // logOut()
+    //   .then(() => {})
+    //   .catch((err) => console.log(err));
   };
 
   const navOptions = (
@@ -49,7 +52,7 @@ const Navbar = () => {
           <button className="flex gap-2">
             {/* <BsCartCheckFill /> */}
             <FaShoppingCart className="mt-1 w-5" />
-            <div className="badge badge-secondary">+{cart.length}</div>
+            <div className="badge badge-secondary">+{cart?.length}</div>
           </button>
         </Link>
       </li>
